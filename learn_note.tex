@@ -1,0 +1,195 @@
+\documentclass[utf8]{ctexart} %中文文档类
+\usepackage[left=2.50cm, right=2.50cm, top=2.50cm, bottom=2.50cm]{geometry} % 页边距
+\usepackage{indentfirst} % 首行缩进
+\usepackage{fancyhdr} % 设置页眉、页脚
+\renewcommand\headrulewidth{0pt}% 页眉与正文之间的水平线粗细
+\usepackage{ctexcap} % 标题是中文的
+\usepackage{helvet} % 用来指定beamer使用的字体
+\usepackage{hyperref} % bookmarks 
+\usepackage{multicol} % 分栏
+\usepackage{float}
+\usepackage{amsmath, amsfonts, amssymb} % 数学公式、符号
+\usepackage[english]{babel} % 数学公式标准
+\usepackage{bm} % 加粗方程字体 
+\usepackage{float}
+
+\usepackage{graphicx} % 图片 
+\usepackage{url} % 超链接 
+
+\usepackage{multirow} % 表格
+\usepackage{booktabs} % 三线表
+\usepackage{longtable} % 长表格
+
+%\usepackage{algorithm} % 算法或伪代码
+%\usepackage{algorithmic} % 算法或伪代码
+\usepackage[linesnumbered,lined,boxed,commentsnumbered]{algorithm2e}
+
+\usepackage{enumitem} % 枚举环境宏包
+
+%\renewcommand{\algorithmicrequire}{ \textbf{Input:}} 
+%\renewcommand{\algorithmicensure}{ \textbf{Initialize:}} 
+%\renewcommand{\algorithmicreturn}{ \textbf{Output:}} %算法格式
+
+\newtheorem{theorem}{\indent 定理}[section]
+\newtheorem{lemma}[theorem]{\indent 引理}
+\newtheorem{proposition}[theorem]{\indent 命题}
+\newtheorem{corollary}[theorem]{\indent 推论}
+\newtheorem{definition}{\indent 定义}[section]
+\newtheorem{example}{\indent 例}[section]
+\newtheorem{remark}{\indent 注}[section]
+\newenvironment{solution}{\begin{proof}[\indent\bf 解]}{\end{proof}}
+\renewcommand{\proofname}{\indent\bf 证明}
+
+\pagestyle{fancy} \lhead{} \chead{} \lfoot{} \cfoot{} \rfoot{}
+\pagestyle{plain}
+\hypersetup{colorlinks, bookmarks, unicode} % unicode 
+ 
+\title{\textbf{Learn Computer System}}
+\author{\bf Chirality}
+\date{}
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black
+} % 使目录为黑色字
+\begin{document}
+\maketitle
+\newpage
+\renewcommand{\contentsname}{目录} 
+\tableofcontents
+\newpage 
+\section{信息的表示}
+\subsection{整数的表示}
+\subsubsection{整型的数据类型}
+下面两个表格给出了C语言的各种整型在32位和64位两种程序下的大小以及范围。
+\begin{table}[h!]
+	\begin{center}
+		\begin{tabular}{c|c|c|c}
+			\textbf{类型名} & \textbf{占用字节数(Byte)} & \textbf{最小值} & \textbf{最大值} \\
+			\hline
+			char & 1 & -128 & 127\\
+			\hline
+			unsigned char & 1 & 0 & 255\\
+			\hline
+			short & 2 & -32768 & 32767\\
+			\hline
+			unsigned short & 2 & 0 & 65535\\
+			\hline
+			int & 4 & -2147483648 & 2147483647\\
+			\hline
+			unsigned int & 4 & 0 & 4294967295\\
+			\hline
+			long & 4 & -2147483648 & 2147483647\\
+			\hline
+			unsigned long & 4 & 0 & 4294967295\\
+			\hline
+			int32\_t & 4 & -2147483648 & 2147483647\\
+			\hline
+			uint32\_t & 4 & 0 & 4294967295\\
+			\hline
+			int64\_t & 8 & -9223372036854775808 & 9223372036854775807\\
+			\hline
+			uint64\_t & 8 & 0 & 18446744073709551615\\
+			\hline
+		\end{tabular}
+	\caption{32位程序的C语言数据类型大小和范围}
+	\end{center}
+\end{table}
+
+\begin{table}[h!]
+	\begin{center}
+		\begin{tabular}{c|c|c|c}
+			\textbf{类型名} & \textbf{占用字节数(Byte)} & \textbf{最小值} & \textbf{最大值} \\
+			\hline
+			char & 1 & -128 & 127\\
+			\hline
+			unsigned char & 1 & 0 & 255\\
+			\hline
+			short & 2 & -32768 & 32767\\
+			\hline
+			unsigned short & 2 & 0 & 65535\\
+			\hline
+			int & 4 & -2147483648 & 2147483647\\
+			\hline
+			unsigned int & 4 & 0 & 4294967295\\
+			\hline
+			long & 8 & -9223372036854775808 & 9223372036854775807\\
+			\hline
+			unsigned long & 8 & 0 & 18446744073709551615\\
+			\hline
+			int32\_t & 4 & -2147483648 & 2147483647\\
+			\hline
+			uint32\_t & 4 & 0 & 4294967295\\
+			\hline
+			int64\_t & 8 & -9223372036854775808 & 9223372036854775807\\
+			\hline
+			uint64\_t & 8 & 0 & 18446744073709551615\\
+			\hline
+		\end{tabular}
+	\caption{64位程序的C语言数据类型大小和范围}
+	\end{center}
+\end{table}
+可以看出每种整型都分为有符号和无符号两种, 了解它们的编码方式就可以快速得到它们的范围.
+\subsubsection{无符号数的编码}
+假设一个$\omega$位的01向量是一个无符号整数的编码, 记$$\boldsymbol{x}=[x_{\omega-1},x_{\omega-2},\dots,x_0]$$
+其中$x_i=0\text{ or }1,\quad i=0,1,\dots,\omega-1$. 我们用记号$\mathrm{B2U}_{\omega}(\boldsymbol{x})$表示$\boldsymbol{x}$所代表的无符号整数的值, 那么就有
+$$\mathrm{B2U}_{\omega}(\boldsymbol{x})=\sum_{i=0}^{\omega-1}x_i2^i$$
+在数学上很容易证明无符号整数与编码按这种规则的对应是双射(单射且满射). \par 
+下面给出一些例子:
+$$\begin{aligned}
+&\mathrm{B2U}_{4}([0101])=0\cdot2^3+1\cdot2^2+0\cdot2^1+1\cdot2^0 = 5\\
+&\mathrm{B2U}_{4}([1111])=1\cdot2^3+1\cdot2^2+1\cdot2^1+1\cdot2^0 = 15\\
+&13=1\cdot2^3+1\cdot2^2+0\cdot2^1+1\cdot2^0 =\mathrm{B2U}_{4}([1101])
+\end{aligned}$$
+不难得出结论, $\omega$位编码表示的无符号整型的最小值是0, 对应编码为$\omega$个0,  最大值是$2^{\omega}-1$, 对应编码为$\omega$个1.
+\subsubsection{有符号数的补码(two's-complement)编码}
+假设一个$\omega$位的01向量是一个有符号整数的补码编码, 记$$\boldsymbol{x}=[x_{\omega-1},x_{\omega-2},\dots,x_0]$$
+其中$x_i=0\text{ or }1,\quad i=0,1,\dots,\omega-1$. 我们用记号$\mathrm{B2T}_{\omega}(\boldsymbol{x})$表示$\boldsymbol{x}$在补码编码规则下所代表的有符号整数值, 那么就有
+$$\mathrm{B2T}_{\omega}(\boldsymbol{x})=-x_{\omega-1}2^{\omega-1}+\sum_{i=0}^{\omega-2}x_i2^i$$
+最高位$x_{\omega-1}$称为符号位, 权重为$-2^{\omega-1}$, 容易发现符号位为1时值为负数, 反之为正数,  并且补码表示有符号整数也是双射.\par 
+下面给出一些例子:
+$$\begin{aligned}
+&\mathrm{B2T}_{4}([0101])=-0\cdot2^3+1\cdot2^2+0\cdot2^1+1\cdot2^0 = 5\\
+&\mathrm{B2T}_{4}([1111])=-1\cdot2^3+1\cdot2^2+1\cdot2^1+1\cdot2^0 = -1\\
+&-3=-1\cdot2^3+1\cdot2^2+0\cdot2^1+1\cdot2^0 =\mathrm{B2T}_{4}([1101])阿
+\end{aligned}$$
+补码编码的$\omega$位有符号数最大值为$2^{\omega-1}-1$, 对应的编码为$[0,1,\dots,1]$, 最小值为$-2^{\omega-1}$, 对应的编码为$[1,0,\dots,0]$. 我们也容易得到如下结论: 如果两个$\omega$位补码编码除了符号位都相同, 那么它们的大小相差$2^{\omega-1}$.\par 
+下表给出一些同样的编码表示为无符号数和用补码规则表示有符号数的结果
+\begin{table}[H]
+	\begin{center}	
+		\begin{tabular}{c|c|c|c}
+			\textbf{hex} & \textbf{binary} & \textbf{unsigned int} &
+			\textbf{signed int}\\
+			\hline
+			0xE & 1110 & 14 & -2\\
+			\hline
+			0x0 & 0000 & 0 & 0\\
+			\hline
+			0x5 & 0101 & 5 & 5\\
+			\hline
+			0x8 & 1000 & 8 & -8\\
+			\hline
+			0xD & 1101 & 13 & -3\\
+			\hline
+			0xF & 1111 & 15 & -1\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+从表中可以注意到如下规律: 如果编码最高位是0, 那么无符号和有符号表示的整数值相同; 如果编码最高位是1, 那么它表示的无符号数与其补码规则表示的有符号数的和是$2^{\omega}$, 这个规律在数学上的证明也是显然的.\par 
+最后, 我们可以证明, 如果两个使用补码表示符号数的等长编码的每一位都不同, 那么它们表示的符号数的和为-1, 这也就是说对于一个符号数x, 将它的二进制补码表示按位取反, 即可得到-x-1的补码表示. 
+\subsubsection{反码与原码}
+\textbf{反码}(Ones' Complement)的规则为$$\mathrm{B2O}_{\omega}(\boldsymbol{x})=-x_{\omega-1}(2^{\omega-1}-1)+\sum_{i=0}^{\omega-2}x_i2^i$$
+\par
+\textbf{原码}(Sign-Magnitude)的规则为$$\mathrm{B2S}_{\omega}(\boldsymbol{x})=(-1)^{x_{\omega-1}}\cdot(\sum_{i=0}^{\omega-2}x_i2^i)$$
+\par 
+这两种有符号整数的编码方式已经很少采用了, 其中一个原因是非双射性, 对于数字0, 除了使用$[0,\dots,0]$表示外, 反码还可以使用$[1,\dots,1]$表示, 原码还可以使用$[1,0,\dots,0]$表示. 现代机器几乎全部使用补码, 所以之后的符号数表示我们都默认是使用补码的表示.
+
+
+
+
+
+
+
+
+
+\end{document}
