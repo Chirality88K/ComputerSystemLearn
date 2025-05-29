@@ -12,7 +12,8 @@
 \usepackage[english]{babel} % 数学公式标准
 \usepackage{bm} % 加粗方程字体 
 \usepackage{float}
-
+\usepackage{listings}
+\usepackage{xcolor}
 \usepackage{graphicx} % 图片 
 \usepackage{url} % 超链接 
 
@@ -51,6 +52,17 @@
 	colorlinks=true,
 	linkcolor=black
 } % 使目录为黑色字
+\lstset{
+	numbers=left, % 显示行号
+	numberstyle=\tiny, % 行号字体
+	keywordstyle=\color{blue!70}, % 关键字颜色
+	commentstyle=\color{red!50!green!50!blue!50}, % 注释颜色
+	frame=shadowbox, % 为代码块添加阴影框
+	rulesepcolor=\color{red!20!green!20!blue!20}, % 阴影框颜色
+	escapeinside=``, % 允许在代码块中使用 LaTeX 命令
+	xleftmargin=2em, xrightmargin=2em, aboveskip=1em, % 设置代码块的边距
+	framexleftmargin=2em % 阴影框左边距
+} 
 \begin{document}
 \maketitle
 \newpage
@@ -183,7 +195,38 @@ $$\begin{aligned}
 \textbf{原码}(Sign-Magnitude)的规则为$$\mathrm{B2S}_{\omega}(\boldsymbol{x})=(-1)^{x_{\omega-1}}\cdot(\sum_{i=0}^{\omega-2}x_i2^i)$$
 \par 
 这两种有符号整数的编码方式已经很少采用了, 其中一个原因是非双射性, 对于数字0, 除了使用$[0,\dots,0]$表示外, 反码还可以使用$[1,\dots,1]$表示, 原码还可以使用$[1,0,\dots,0]$表示. 现代机器几乎全部使用补码, 所以之后的符号数表示我们都默认是使用补码的表示.
-
+\subsubsection{无符号和有符号的类型转换}
+C语言中的强制类型转换本质上就是对于同一个编码的不同解读, 比如将32位有符号整数-1强制转换为无符号整数
+\lstset{language=c++}
+\begin{lstlisting}
+int a = -1;
+unsigned int b = a;
+\end{lstlisting}
+输出变量b, 结果为4294967295. 因为-1的32位补码表示为0xFFFFFFFF, 将其解析为无符号数便得到了32位的最大无符号数.\par 
+反过来, 定义一个无符号数, 转换为有符号数
+\lstset{language=c++}
+\begin{lstlisting}
+unsigned int a = 4294967294u;
+int b = a;
+\end{lstlisting}
+a的编码为0xFFFFFFFE, 解析为有符号数变为-2.\par 
+我们可以得到下列结论:
+\begin{itemize}
+	\item $\omega$位的有符号数x, 强制转换为$\omega$位的无符号数y, 则有
+	$$y=\left\{
+	\begin{aligned}
+	&x, &x\geq0,\\
+	&x+2^{\omega}, &x<0
+	\end{aligned}
+	\right.$$
+	\item $\omega$位的无符号数x, 强制转换为$\omega$位的有符号数y, 则有
+	$$y=\left\{
+	\begin{aligned}
+	&x, &x\leq2^{\omega-1}-1,\\
+	&x-2^{\omega}, &x\geq2^{\omega-1}
+	\end{aligned}
+	\right.$$
+\end{itemize}
 
 
 
