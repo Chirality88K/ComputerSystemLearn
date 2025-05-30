@@ -61,7 +61,8 @@
 	rulesepcolor=\color{red!20!green!20!blue!20}, % 阴影框颜色
 	escapeinside=``, % 允许在代码块中使用 LaTeX 命令
 	xleftmargin=2em, xrightmargin=2em, aboveskip=1em, % 设置代码块的边距
-	framexleftmargin=2em % 阴影框左边距
+	framexleftmargin=2em, % 阴影框左边距
+	showstringspaces=false
 } 
 \begin{document}
 \maketitle
@@ -227,12 +228,29 @@ a的编码为0xFFFFFFFE, 解析为有符号数变为-2.\par
 	\end{aligned}
 	\right.$$
 \end{itemize}
-
-
-
-
-
-
-
+C语言中对含有无符号的表达式运算有一些奇特的处理, 例如对于有符号和无符号的数字比较大小, C语言会默认将有符号数强制类型转换为无符号数, 考虑以下代码:
+\lstset{language=c++}
+\begin{lstlisting}
+int max_int = 0x7FFFFFFF; // 2147483647
+int min_int = -max_int - 1;
+cout << "-1 < 0u ?" << ((-1 < 0u) ? "True" : "False") << endl;
+cout << max_int << "u > " << min_int << " ? "
+<< ((2147483647u > min_int) ? "True" : "False") << endl;
+cout << max_int << " > int(2147483648u) ? "
+<< (max_int > int(2147483648u) ? "True" : "False") << endl;
+\end{lstlisting}
+其输出为
+\lstset{language=c++}
+\begin{lstlisting}
+-1 < 0u ? False
+2147483647u > -2147483648 ? False
+2147483647 > int(2147483648u) ? True
+\end{lstlisting}
+出现这样的结果就是C语言的强制类型转换导致的, 在表达式$-1 < 0u$中, 编译器会将-1强行转换为无符号数再比较, -1的补码为0xFFFFFFFF, 解析为无符号数会变为最大的无符号数. 表达式$2147483647u > -2147483648$中, 右侧数字是最小的32位符号数, 补码为0x80000000, 解析为无符号数变为$2^{31}$, 大于左侧的$2^{31}-1$. 最后一个表达式$2147483647 > int(2147483648u)$, 右侧数字由无符号转为有符号, 编码是0x80000000, 转为符号数变为最小32位符号数. 
+\subsubsection{整型编码的扩展}
+扩展指将低位数补全位数变为高位数, 这样的操作显然是安全可控的. 对于无符号数, 扩展只需要高位补0即可, 例如四位无符号数0x8, 扩展到八位, 十六位, 三十二位分别为0x08, 0x0008,0x00000008. 
+\subsubsection{整型编码的截断}
+\subsection{整数运算}
+\subsubsection{无符号加法}
 
 \end{document}
